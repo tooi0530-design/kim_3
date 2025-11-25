@@ -1,0 +1,5 @@
+{
+  "name": "My Digital Planner",
+  "description": "A digital replication of a classic Korean stationery planner, featuring Daily, Weekly, Monthly, and Yearly views with persistent storage.",
+  "requestFramePermissions": []
+}
