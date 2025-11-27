@@ -2,22 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { DailyData } from '../types';
 
 interface DailyViewProps {
-  initialData?: DailyData;
+  initialData: DailyData;
   onSave: (data: DailyData) => void;
+  onDateChange?: (newDate: string) => void;
 }
 
 const ROWS = 12; // Number of rows in the schedule table
 
-const DailyView: React.FC<DailyViewProps> = ({ initialData, onSave }) => {
-  const [data, setData] = useState<DailyData>(() => initialData || {
-    date: new Date().toISOString().split('T')[0],
-    todayGoal: '',
-    todos: '',
-    schedule: Array(ROWS).fill(''),
-    checklist: '',
-    memo: '',
-    summary: ''
-  });
+const DailyView: React.FC<DailyViewProps> = ({ initialData, onSave, onDateChange }) => {
+  const [data, setData] = useState<DailyData>(initialData);
+
+  // Sync internal state when initialData changes (e.g. when App loads a different date)
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
 
   // Debounce save
   useEffect(() => {
@@ -56,8 +54,16 @@ const DailyView: React.FC<DailyViewProps> = ({ initialData, onSave }) => {
             <input 
                 type="date" 
                 value={data.date}
-                onChange={(e) => setData({...data, date: e.target.value})}
-                className="text-lg font-serif bg-transparent outline-none text-gray-600 mb-2"
+                onChange={(e) => {
+                    // If onDateChange is provided, let parent handle data switching
+                    if (onDateChange) {
+                        onDateChange(e.target.value);
+                    } else {
+                        // Fallback (shouldn't really happen with new App logic)
+                        setData({...data, date: e.target.value});
+                    }
+                }}
+                className="text-lg font-serif bg-transparent outline-none text-gray-600 mb-2 cursor-pointer hover:text-sage-700 transition-colors"
             />
             
             <div className="mt-auto flex justify-between items-end font-bold text-sm text-gray-500">
